@@ -1,9 +1,8 @@
 package mapsandsets;
 
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.LinkedHashMap;
-import java.util.Map;
+import jdk.jfr.Frequency;
+
+import java.util.*;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
@@ -16,8 +15,8 @@ public class HashSets {
         hs.add("d");
         System.out.println(hs);
 
-        Map<String,Long> hm=new HashMap<>();
-        hm=hs.stream().collect(Collectors.toMap(Function.identity() ,HashSet::copyOf,LinkedHashMap::new,Collectors.counting()));
+        Map<String,Integer> hm=new HashMap<>();
+        hm=hs.stream().collect(Collectors.toMap(((q)->q),Object::hashCode));
         System.out.println(hm);
 
         for(Map.Entry h1:hm.entrySet()){
