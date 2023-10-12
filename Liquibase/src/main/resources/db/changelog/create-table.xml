@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+        http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.8.xsd">
+
+
+    <changeSet id="1" author="praveen">
+        <createTable tableName="Student">
+            <column name="id" type="int" autoIncrement="true">
+                <constraints primaryKey="true"></constraints>
+            </column>
+            <column name="name" type="varchar(30)">
+            </column>
+            <column name="email" type="varchar(30)">
+            </column>
+            <column name="address" type="varchar(30)">
+            </column>
+
+        </createTable>
+    </changeSet>
+
+<!--    Adding new Column in table-->
+    <changeSet id="5" author="praveen">
+        <addColumn tableName="Student">
+            <column name="coursefee" type="bigint" >
+            </column>
+        </addColumn>
+    </changeSet>
+
+<!--    Removing column in Existing table-->
+    <changeSet id="3" author="praveen">
+        <dropColumn tableName="Student">
+            <column name="coursefee">
+            </column>
+        </dropColumn>
+    </changeSet>
+
+
+<!--    Change the Datatype in existing table-->
+    <changeSet id="6" author="praveen">
+        <modifyDataType tableName="Student" columnName="address" newDataType="varchar(30)" ></modifyDataType>
+    </changeSet>
+
+</databaseChangeLog>
