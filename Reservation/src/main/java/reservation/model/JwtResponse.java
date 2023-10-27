@@ -9,6 +9,6 @@ import lombok.*;
 @Builder
 @ToString
 public class JwtResponse {
-    private String jwtToken;
+    private String accessToken;
     private String username;
 }

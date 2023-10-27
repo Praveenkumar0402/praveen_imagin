@@ -29,7 +29,8 @@ public class Streams_TerminalOperations {
 
         //Count
         List<Integer> list1=new ArrayList<>(Arrays.asList(1,2,3,4,5));
-        Long count=list1.stream().count();
+        long count=list1.stream().count();
+        long count1= list1.size();//Both are same output
         System.out.println("Count:"+count);
 
         //Reduce
@@ -47,7 +48,7 @@ public class Streams_TerminalOperations {
         System.out.println("Maximum:"+maximum);
 
         //min and max both outputs are same but using only one Array List here
-        List<Integer> numbers=Arrays.asList(4,2,6,9,1);
+        List<Integer> numbers=Arrays.asList(4,12,6,9,1);
         Optional<Integer> min=numbers.stream().min(Integer::compare);
         Optional<Integer> max=numbers.stream().max(Integer::compare);
         System.out.println("Minimum Number: "+min.orElse(0));
@@ -57,7 +58,7 @@ public class Streams_TerminalOperations {
         List<Integer> list3=new ArrayList<>(Arrays.asList(1,2,3,5,6));
         Optional<Integer> answer3=list3.stream().findFirst();
         answer3.ifPresent(value-> System.out.println("First Value:"+value));
-//        System.out.println("First value:"+answer3);
+//        System.out.println("First value:"+answer3);//Output like -> Optional[1]
 
         //findAny
         List<Integer> list4=new ArrayList<>(Arrays.asList(1,2,3,4,5));
@@ -69,5 +70,7 @@ public class Streams_TerminalOperations {
         boolean containsZero = list.stream().noneMatch(value -> value == 0);
         System.out.println("Is 2 present: " + containsTwo);
         System.out.println("Is 0 present: " + containsZero);
+
+
     }
 }

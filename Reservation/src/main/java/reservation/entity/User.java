@@ -1,18 +1,13 @@
 package reservation.entity;
 
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
+import jakarta.validation.constraints.Pattern;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import lombok.ToString;
-import org.springframework.security.core.GrantedAuthority;
-import org.springframework.security.core.authority.SimpleGrantedAuthority;
-import org.springframework.security.core.userdetails.UserDetails;
+import org.hibernate.validator.constraints.NotBlank;
 import reservation.enums.Gender;
 import reservation.enums.UserStatus;
 
-import java.util.Collection;
-import java.util.List;
 
 @Data
 @NoArgsConstructor
@@ -26,9 +21,11 @@ public class User {
     @Column(name = "id")
     private int id;
 
+    @NotBlank(message = "Please enter the firstname")
     @Column(name = "first_name")
     private String firstname;
 
+    @NotBlank(message = "Please enter the lastname")
     @Column(name = "last_name")
     private String lastname;
 
@@ -36,11 +33,13 @@ public class User {
     @Column(name = "gender")
     private Gender gender;
 
+    @NotBlank(message = "Invalid email address")
     @Column(name = "email")
     private String email;
 
     private String password;
 
+    @Pattern(regexp = "^[6789][0-9]{9}$", message = "Check the mobile number")
     @Column(name = "mobile")
     private String mobile;
 
@@ -48,6 +47,7 @@ public class User {
     @Column(name = "userstatus")
     private UserStatus userstatus;
 
+    @NotBlank
     private String roles;
 
 

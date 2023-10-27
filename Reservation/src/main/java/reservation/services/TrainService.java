@@ -5,22 +5,13 @@ import jakarta.servlet.http.HttpServletResponse;
 import org.apache.poi.hssf.usermodel.HSSFRow;
 import org.apache.poi.hssf.usermodel.HSSFSheet;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
-import org.springframework.http.HttpStatus;
-import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.server.ResponseStatusException;
 import reservation.AuthenticationContext.AuthUtils;
 import reservation.dto.TrainDto;
 import reservation.entity.*;
-import reservation.exceptions.NoUsersFoundException;
-import reservation.exceptions.ObjectNotValid;
-import reservation.exceptions.UserNotFound;
-import reservation.repository.BookingRepository;
-import reservation.repository.BusRepository;
+import reservation.exceptions.UserNotFoundException;
 import reservation.repository.TrainRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import reservation.repository.UserRepository;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -35,10 +26,10 @@ public class TrainService {
     @Autowired
     AuthUtils authUtils;
 
-    public List<TrainDto> getAllTrain() {
+    public List<TrainDto> getAllTrain() throws UserNotFoundException {
         List<Train> train = trainRepository.findAllTrains();
         if (train.isEmpty()) {
-            throw new NoUsersFoundException("No trains found");
+            throw new UserNotFoundException("No trains found");
         } else {
             List<TrainDto> trainDto = new ArrayList<>();
             for (Train train1 : train) {
@@ -49,9 +40,9 @@ public class TrainService {
         }
     }
 
-    public TrainDto updateTrain(int id, TrainDto trainDto) {
+    public TrainDto updateTrain(int id, TrainDto trainDto) throws UserNotFoundException {
         User user = authUtils.getUser();
-        Train train = trainRepository.findById(id).get();
+        Train train = trainRepository.findById(id).orElseThrow(()->new UserNotFoundException("Id is not present for Train Update"));;
         if (user.getId() == train.getUserid()) {
             train.setTotalseats(trainDto.getTotalseats());
             train.setTrainnumber(trainDto.getTrainNumber());
@@ -61,18 +52,18 @@ public class TrainService {
             train.setUserid(trainDto.getUserid());
             trainRepository.save(train);
         } else {
-            throw new UserNotFound("User Mismatch");
+            throw new UserNotFoundException("User Mismatch");
         }
         return new TrainDto(train);
     }
 
-    public TrainDto deleteTrain(int id) {
+    public TrainDto deleteTrain(int id) throws UserNotFoundException {
         User user = authUtils.getUser();
-        Train train = trainRepository.findById(id).get();
+        Train train = trainRepository.findById(id).orElseThrow(()->new UserNotFoundException("Id is not present for Train delete"));;
         if (user.getId() == train.getUserid()) {
             trainRepository.deleteById(id);
         } else {
-            throw new UserNotFound("User Mismatch");
+            throw new UserNotFoundException("User Mismatch");
         }
         return new TrainDto(train);
     }
@@ -122,7 +113,7 @@ public class TrainService {
     }
 
 
-    public List<TrainDto> findBytrain() {
+    public List<TrainDto> findBytrain() throws UserNotFoundException {
         User user = authUtils.getUser();
         List<Train> trains = trainRepository.findByUserid(user.getId());
         List<TrainDto> trainDtos = new ArrayList<>();

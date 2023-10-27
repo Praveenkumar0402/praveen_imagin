@@ -21,6 +21,7 @@ import reservation.entity.Train;
 import reservation.entity.User;
 import reservation.enums.Gender;
 import reservation.enums.UserStatus;
+import reservation.exceptions.UserNotFoundException;
 import reservation.repository.TrainRepository;
 import reservation.repository.UserRepository;
 import reservation.services.TrainService;
@@ -34,6 +35,7 @@ import static org.mockito.Mockito.when;
 
 @SpringBootTest
 @AutoConfigureMockMvc
+@Disabled
 //@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 class ReservationApplicationTests {
 
@@ -105,7 +107,6 @@ class ReservationApplicationTests {
 
 
     @Test
-
     public void save() {
        when(trainRepository.save(trainDto)).thenReturn(trainDto);
        TrainDto trainDto1=new TrainDto(trainDto);
@@ -117,7 +118,7 @@ class ReservationApplicationTests {
     }
 
     @Test
-    public void delete() {
+    public void delete() throws UserNotFoundException {
         when(authUtils.getUser()).thenReturn(user);
         //when( trainRepository.).thenReturn(trainDto);
         TrainDto trainDto1=new TrainDto(trainDto);

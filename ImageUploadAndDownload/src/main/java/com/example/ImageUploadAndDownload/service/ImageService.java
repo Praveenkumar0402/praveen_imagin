@@ -16,24 +16,17 @@ public class ImageService {
     @Autowired
     ImageRepository imageRepository;
 
-//    private final String FOLDER_PATH="/Users/javatechie/Desktop/MyFIles/";
-
     public String uploadImage(MultipartFile file) throws IOException {
         Image image = imageRepository.save(Image.builder()
                 .name(file.getOriginalFilename())
                 .filetype(file.getContentType())
-//                .filepath(ImageUtils.compressImage(file.getBytes())).build());
                 .filepath(file.getBytes()).build());
-        if (image != null) {
-            return "file uploaded successfully : " + file.getOriginalFilename();
-        }
-        return null;
+        return "file uploaded successfully : " + file.getOriginalFilename();
     }
 
 
     public byte[] downloadImage(String fileName) {
         Optional<Image> dbImageData = imageRepository.findByName(fileName);
-//        byte[] images = ImageUtils.decompressImage(dbImageData.get().getFilepath());
         byte[] images=dbImageData.get().getFilepath();
         return images;
     }

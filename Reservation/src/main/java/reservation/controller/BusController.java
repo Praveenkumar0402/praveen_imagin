@@ -2,6 +2,7 @@ package reservation.controller;
 
 import jakarta.mail.MessagingException;
 import jakarta.servlet.http.HttpServletResponse;
+import jakarta.validation.Valid;
 import org.springframework.boot.context.event.ApplicationReadyEvent;
 import org.springframework.context.event.EventListener;
 import org.springframework.data.repository.query.Param;
@@ -11,6 +12,7 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import reservation.dto.BookingDto;
 import reservation.dto.BusDto;
 import reservation.entity.Bus;
+import reservation.exceptions.UserNotFoundException;
 import reservation.services.BusService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
@@ -26,25 +28,27 @@ public class BusController {
     BusService busservice;
 
     @GetMapping("/all")
-    @PreAuthorize("hasAuthority('ADMIN')")
-    public List<BusDto> getAll() {
+    @PreAuthorize("hasAuthority('Admin')")
+    public List<BusDto> getAll() throws UserNotFoundException {
         return busservice.findAll();
     }
 
 
     @PutMapping("/update/{id}")
-    public BusDto updates(@PathVariable("id") int id, @RequestBody BusDto busdto) {
+    @PreAuthorize("hasAuthority('Admin')")
+    public BusDto updates(@PathVariable("id") int id, @RequestBody @Valid BusDto busdto) throws UserNotFoundException {
         return busservice.updateBus(id,busdto);
     }
 
     @DeleteMapping("/delete/{id}")
-    public ResponseEntity<BusDto> remove(@PathVariable("id") int id) {
+    @PreAuthorize("hasAuthority('Admin')")
+    public ResponseEntity<BusDto> remove(@PathVariable("id") int id) throws UserNotFoundException {
         BusDto busDto = busservice.deleteBus(id);
         return ResponseEntity.status(HttpStatus.OK).body(busDto);
     }
 
     @PostMapping("/create")
-    public ResponseEntity<BusDto> create(@RequestBody BusDto busDto) {
+    public ResponseEntity<BusDto> create(@RequestBody @Valid BusDto busDto) {
         BusDto busDto1 = busservice.createBus(busDto);
         return ResponseEntity.status(HttpStatus.OK).body(busDto1);
     }
@@ -68,7 +72,7 @@ public class BusController {
 //    }
 
     @GetMapping("/busid")
-    public ResponseEntity<List<BusDto>> busids(){
+    public ResponseEntity<List<BusDto>> busids() throws UserNotFoundException {
         List<BusDto> busDtos=busservice.findBybus();
         return ResponseEntity.status(HttpStatus.OK).body(busDtos);
     }

@@ -10,8 +10,7 @@ import reservation.dto.BookingDto;
 import reservation.entity.Booking;
 import reservation.entity.User;
 import reservation.enums.StateOfTravel;
-import reservation.exceptions.NoBookingFound;
-import reservation.exceptions.NoUsersFoundException;
+import reservation.exceptions.UserNotFoundException;
 import reservation.repository.BookingRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -32,10 +31,10 @@ public class BookingService {
     @Autowired
     AuthUtils authUtils;
 
-    public List<BookingDto> findAll() {
+    public List<BookingDto> findAll() throws UserNotFoundException {
         List<Booking> bookings = bookingRepository.findAllBookings();
         if (bookings.isEmpty()) {
-            throw new NoUsersFoundException("Sorry no bookings found");
+            throw new UserNotFoundException("Sorry no bookings found");
         } else {
             List<BookingDto> bookingDtos = new ArrayList<>();
             for (Booking booking : bookings) {
@@ -46,9 +45,9 @@ public class BookingService {
         }
     }
 
-    public BookingDto updateBooking(int id, BookingDto bookingDto) {
+    public BookingDto updateBooking(int id, BookingDto bookingDto) throws UserNotFoundException {
         User user = authUtils.getUser();
-        Booking booking = bookingRepository.findById(id).get();
+        Booking booking = bookingRepository.findById(id).orElseThrow(()->new UserNotFoundException("Id is not present for Booking Update"));
         if (user.getId() == booking.getUserid()) {
             booking.setFrom(bookingDto.getFrom());
             booking.setTo(bookingDto.getTo());
@@ -57,19 +56,19 @@ public class BookingService {
             booking.setStateoftravel(bookingDto.getStateoftravel());
             bookingRepository.save(booking);
         } else {
-            throw new NoBookingFound("User Mismatch");
+            throw new UserNotFoundException("User Mismatch");
         }
         return new BookingDto(booking);
 
     }
 
-    public BookingDto deleteBooking(int id) {
+    public BookingDto deleteBooking(int id) throws UserNotFoundException {
         User user = authUtils.getUser();
-        Booking booking = bookingRepository.findById(id).get();
+        Booking booking = bookingRepository.findById(id).orElseThrow(()->new UserNotFoundException("Id is not present for Booking Update"));;
         if (user.getId() == booking.getUserid()) {
             bookingRepository.deleteById(id);
         } else {
-            throw new NoUsersFoundException("User Mismatch");
+            throw new UserNotFoundException("User Mismatch");
         }
         return new BookingDto(booking);
     }
@@ -116,7 +115,7 @@ public class BookingService {
     }
 
     //Id based retrieved the data
-    public List<BookingDto> findbyemail() {
+    public List<BookingDto> findbyemail() throws UserNotFoundException {
         User user = authUtils.getUser();
         List<Booking> bookings = bookingRepository.findByUserid(user.getId());
         List<BookingDto> bookingDtos = new ArrayList<>();

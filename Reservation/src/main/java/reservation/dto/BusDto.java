@@ -1,6 +1,5 @@
 package reservation.dto;
 
-import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -12,18 +11,18 @@ public class BusDto {
 
     @NotNull
     private int Id;
-    @NotBlank
-    private int BusNumber;
-    @NotBlank
-    private int BookingSeatNo;
-    @NotBlank
+    @NotNull(message = "Enter the Bus number")
+    private Integer BusNumber;
+    @NotNull(message = "Enter the BookingSeat number")
+    private Integer BookingSeatNo;
+
     private int SeatAvailability;
-    @NotBlank
+
     private int Totalseats = 30;
-    @NotNull
-    private int bookingid;
-    @NotNull
-    private int Userid;
+    @NotNull(message = "Enter the Booking id")
+    private Integer bookingid;
+    @NotNull(message = "Enter the User id")
+    private Integer Userid;
 
 
     public BusDto(Bus bus) {

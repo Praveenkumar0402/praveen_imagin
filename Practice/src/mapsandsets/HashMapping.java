@@ -10,7 +10,7 @@ public class HashMapping {
         Map<Integer,String> hm=new HashMap<>();
         hm.put(1,"Praveen");
         hm.put(3,"Prasanna");
-        hm.put(4,"Praveen");
+        hm.put(4,"Naidu");
         hm.put(2,"Dinesh");
         for(Map.Entry g: hm.entrySet() ){
             System.out.println(g);

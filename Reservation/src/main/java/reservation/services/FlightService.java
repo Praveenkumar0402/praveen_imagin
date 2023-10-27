@@ -7,12 +7,9 @@ import org.apache.poi.hssf.usermodel.HSSFSheet;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import reservation.AuthenticationContext.AuthUtils;
 import reservation.dto.FlightDto;
-import reservation.entity.Booking;
 import reservation.entity.Flight;
 import reservation.entity.User;
-import reservation.exceptions.NoUsersFoundException;
-import reservation.exceptions.ObjectNotValid;
-import reservation.exceptions.UserNotFound;
+import reservation.exceptions.UserNotFoundException;
 import reservation.repository.BookingRepository;
 import reservation.repository.FlightRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -34,10 +31,10 @@ public class FlightService {
     @Autowired
     AuthUtils authUtils;
 
-    public List<FlightDto> findAll() {
+    public List<FlightDto> findAll() throws UserNotFoundException {
         List<Flight> flights = flightRepository.findallflights();
         if (flights.isEmpty()) {
-            throw new NoUsersFoundException("No flights found");
+            throw new UserNotFoundException("No flights found");
         } else {
             List<FlightDto> flightDto = new ArrayList<>();
             for (Flight flight : flights) {
@@ -48,9 +45,9 @@ public class FlightService {
         }
     }
 
-    public FlightDto updateFlight(int id, FlightDto flightDto) {
+    public FlightDto updateFlight(int id, FlightDto flightDto) throws UserNotFoundException {
         User user = authUtils.getUser();
-        Flight flight = flightRepository.findById(id).get();
+        Flight flight = flightRepository.findById(id).orElseThrow(()->new UserNotFoundException("Id is not present for Flight Update"));
         if (user.getId() == flightDto.getUserid()) {
             flight.setTotalseats(flightDto.getTotalseats());
             flight.setFlightnumber(flightDto.getFlightNumber());
@@ -59,18 +56,18 @@ public class FlightService {
             flight.setBookingid(flightDto.getBookingid());
             flightRepository.save(flight);
         } else {
-            throw new UserNotFound("User Mismatch");
+            throw new UserNotFoundException("User Mismatch");
         }
         return new FlightDto(flight);
     }
 
-    public FlightDto deleteFlight(int id) {
+    public FlightDto deleteFlight(int id) throws UserNotFoundException {
         User user = authUtils.getUser();
-        Flight flight = flightRepository.findById(id).get();
+        Flight flight = flightRepository.findById(id).orElseThrow(()->new UserNotFoundException("Id is not present for Flight delete"));;
         if (user.getId() == flight.getUserid()) {
             flightRepository.deleteById(id);
         } else {
-            throw new UserNotFound("User Mismatch");
+            throw new UserNotFoundException("User Mismatch");
         }
         return new FlightDto(flight);
     }
@@ -121,7 +118,7 @@ public class FlightService {
     }
 
 
-    public List<FlightDto> findByflight() {
+    public List<FlightDto> findByflight() throws UserNotFoundException {
         User user = authUtils.getUser();
         List<Flight> flights = flightRepository.findByUserid(user.getId());
         List<FlightDto> flightDtos = new ArrayList<>();

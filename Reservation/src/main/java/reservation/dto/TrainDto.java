@@ -14,18 +14,18 @@ public class TrainDto {
 
     @NotNull
     private int Id;
-    @NotBlank
-    private int TrainNumber;
-    @NotBlank
-    private int BookingSeatNo;
-    @NotBlank
+    @NotNull(message = "Enter the Train number")
+    private Integer TrainNumber;
+    @NotNull(message = "Enter the BookingSeat number")
+    private Integer BookingSeatNo;
+
     private int SeatAvailability;
-    @NotBlank
+
     private int Totalseats = 50;
-    @NotNull
-    private int Bookingid;
-    @NotNull
-    private int Userid;
+    @NotNull(message = "Enter the Booking id")
+    private Integer Bookingid;
+    @NotNull(message = "Enter the User id")
+    private Integer Userid;
 
 
     public TrainDto(Train train) {

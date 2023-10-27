@@ -3,46 +3,38 @@ package reservation.services;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 
 import jakarta.servlet.ServletOutputStream;
 import jakarta.servlet.http.HttpServletResponse;
-
 import org.apache.poi.hssf.usermodel.HSSFRow;
 import org.apache.poi.hssf.usermodel.HSSFSheet;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
-import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.security.core.userdetails.UserDetailsService;
-import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import reservation.AuthenticationContext.AuthUtils;
 import reservation.entity.User;
-import reservation.entity.UserInfo;
 import reservation.enums.Gender;
 import reservation.enums.UserStatus;
-import reservation.exceptions.NoUsersFoundException;
-import reservation.exceptions.ObjectNotValid;
+
+import reservation.exceptions.UserNotFoundException;
 import reservation.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 
 @Service
-public class UserService implements UserDetailsService {
+public class UserService {
 
     @Autowired
     UserRepository userRepository;
     @Autowired
     PasswordEncoder passwordEncoder;
-
     @Autowired
     AuthUtils authUtils;
 
-
-    public List<User> findAll() {
+    public List<User> findAll() throws UserNotFoundException {
         List<User> user = userRepository.findallusers();
         if (user.isEmpty()) {
-            throw new NoUsersFoundException("No flights found");
+            throw new UserNotFoundException("No Users found");
         } else {
             List<User> user1 = new ArrayList<>();
             for (User user2 : user) {
@@ -53,12 +45,10 @@ public class UserService implements UserDetailsService {
         }
     }
 
-    public User updateUser(int id, User user1) {
+    public User updateUser(int id, User user1) throws UserNotFoundException {
         User user = authUtils.getUser();
-        User user12 = userRepository.findById(id).get();
-        if (user.getId() != user12.getId()) {
-            throw new ObjectNotValid("Id is not present");
-        } else {
+        User user12 = userRepository.findById(id).orElseThrow(() -> new UserNotFoundException("Id is not Present for updating"));
+        if (user.getId() == user12.getId()) {
             user.setFirstname(user1.getFirstname());
             user.setLastname(user1.getLastname());
             user.setGender(user1.getGender());
@@ -66,17 +56,19 @@ public class UserService implements UserDetailsService {
             user.setMobile(user1.getMobile());
             userRepository.save(user);
             return new User(user);
+        } else {
+            throw new UserNotFoundException("User Mismatch");
         }
     }
 
-    public User deleteUser(int id) {
+    public User deleteUser(int id) throws UserNotFoundException {
         User user = authUtils.getUser();
-        User user1 = userRepository.findById(id).get();
-        if (user.getId() != user1.getId()) {
-            throw new NoUsersFoundException("Id is not present");
-        } else {
+        User user1 = userRepository.findById(id).orElseThrow(() -> new UserNotFoundException("Id is not Present for deleting"));
+        if (user.getId() == user1.getId()) {
             userRepository.deleteById(id);
             return new User(user);
+        } else {
+            throw new UserNotFoundException("User Mismatch");
         }
     }
 
@@ -127,12 +119,12 @@ public class UserService implements UserDetailsService {
         hssfWorkbook.write(servletOutputStream);
     }
 
-    @Override
-    public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-        //load user from database
-        Optional<User> user = userRepository.findByEmail(username);
-        return user.map(UserInfo::new).orElseThrow(() -> new UsernameNotFoundException("UserName Not Found " + username));
-    }
+//    @Override
+//    public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
+//        //load user from database
+//        Optional<User> user = userRepository.findByEmail(username);
+//        return user.map(UserInfo::new).orElseThrow(() -> new UsernameNotFoundException("UserName Not Found " + username));
+//    }
 
     UserStatus check(String status) {
         switch (status) {

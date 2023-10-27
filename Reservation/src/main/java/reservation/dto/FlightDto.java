@@ -12,18 +12,18 @@ public class FlightDto {
 
     @NotNull
     private int Id;
-    @NotBlank
-    private int FlightNumber;
-    @NotBlank
-    private int BookingSeatNo;
-    @NotBlank
+    @NotNull(message = "Enter the Flight number")
+    private Integer FlightNumber;
+    @NotNull(message = "Enter the BookingSeat number")
+    private Integer BookingSeatNo;
+
     private int SeatAvailability;
-    @NotBlank
+
     private int Totalseats=40;
-    @NotNull
-    private int Bookingid;
-    @NotNull
-    private int Userid;
+    @NotNull(message = "Enter the Booking id")
+    private Integer Bookingid;
+    @NotNull(message = "Enter the User id")
+    private Integer Userid;
 
 
     public FlightDto(Flight flight) {

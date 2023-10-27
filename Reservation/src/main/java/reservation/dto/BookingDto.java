@@ -2,8 +2,8 @@ package reservation.dto;
 
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
-import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
+import org.hibernate.validator.constraints.NotBlank;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -18,20 +18,20 @@ import java.util.Date;
 public class BookingDto {
 
     @NotNull
-    private int Id;
-    @NotBlank
+    private Integer Id;
+    @NotBlank(message = "Enter the From Address")
     private String From;
-    @NotBlank
+    @NotBlank(message = "Enter the To Address")
     private String To;
-    @NotBlank
+    @NotNull(message = "Enter the Booking date")
     private Date Bookingdate;
-    @NotBlank
+
     @Enumerated(EnumType.STRING)
     private StateOfTravel Stateoftravel;
-    @NotBlank
+
     private String Bookingstatus;
-    @NotBlank
-    private int Userid;
+    @NotNull(message = "Enter the User id")
+    private Integer Userid;
 
     public BookingDto(Booking bookingo) {
         Id=bookingo.getId();

@@ -1,32 +1,23 @@
 package reservation.services;
 
 
-import jakarta.mail.MessagingException;
-import jakarta.mail.internet.MimeMessage;
 import jakarta.servlet.ServletOutputStream;
 import jakarta.servlet.http.HttpServletResponse;
 import org.apache.poi.hssf.usermodel.HSSFRow;
 import org.apache.poi.hssf.usermodel.HSSFSheet;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
-import org.springframework.core.io.FileSystemResource;
-import org.springframework.mail.javamail.JavaMailSender;
-import org.springframework.mail.javamail.MimeMessageHelper;
 import reservation.AuthenticationContext.AuthUtils;
-import reservation.dto.BookingDto;
 import reservation.dto.BusDto;
-import reservation.entity.Booking;
 import reservation.entity.Bus;
 
 import reservation.entity.User;
+import reservation.exceptions.UserNotFoundException;
 import reservation.repository.BookingRepository;
 import reservation.repository.BusRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import reservation.exceptions.NoUsersFoundException;
-import reservation.exceptions.ObjectNotValid;
 import reservation.repository.UserRepository;
 
-import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
@@ -62,10 +53,10 @@ public class BusService {
     @Autowired
     BookingRepository bookingRepository;
 
-    public List<BusDto> findAll() {
+    public List<BusDto> findAll() throws UserNotFoundException {
         List<Bus> bus = busRepository.findallbuses();
         if (bus.isEmpty()) {
-            throw new NoUsersFoundException("No buses found");
+            throw new UserNotFoundException("No buses found");
         } else {
             List<BusDto> busDto = new ArrayList<>();
             for (Bus buses : bus) {
@@ -77,9 +68,9 @@ public class BusService {
     }
 
 
-    public BusDto updateBus(int id, BusDto busDto) {
+    public BusDto updateBus(int id, BusDto busDto) throws UserNotFoundException {
         User user = authUtils.getUser();
-        Bus bus = busRepository.findById(id).orElseThrow(() -> new RuntimeException("Bus id not FOUND"));
+        Bus bus = busRepository.findById(id).orElseThrow(() -> new UserNotFoundException("Bus id not FOUND"));
         if (user.getId() == bus.getUserid()) {
             bus.setTotalseats(busDto.getTotalseats());
             bus.setBusnumber(busDto.getBusNumber());
@@ -88,19 +79,19 @@ public class BusService {
             bus.setBookingid(busDto.getBookingid());
             busRepository.save(bus);
         } else {
-            throw new NoUsersFoundException("User Mismatch");
+            throw new UserNotFoundException("User Mismatch");
         }
         return new BusDto(bus);
     }
 
 
-    public BusDto deleteBus(int id) {
+    public BusDto deleteBus(int id) throws UserNotFoundException {
         User user=authUtils.getUser();
-        Bus bus = busRepository.findById(id).orElseThrow(()->new RuntimeException("Bus id not found"));
+        Bus bus = busRepository.findById(id).orElseThrow(()->new UserNotFoundException("Bus id not found"));
         if (user.getId()==bus.getUserid()) {
             busRepository.deleteById(id);
         } else {
-            throw new NoUsersFoundException("User Mismatch");
+            throw new UserNotFoundException("User Mismatch");
         }
         return new BusDto(bus);
     }
@@ -151,7 +142,7 @@ public class BusService {
 
     }
 
-    public List<BusDto> findBybus() {
+    public List<BusDto> findBybus() throws UserNotFoundException {
         User user = authUtils.getUser();
         List<Bus> busList = busRepository.findByUserid(user.getId());
         List<BusDto> busDtos = new ArrayList<>();
